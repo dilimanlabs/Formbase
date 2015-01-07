@@ -1,0 +1,23 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/core-input/core-input.html"/>
+<link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+<polymer-element name="q-base-type" attributes="qData isRoot">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <template if="{{isRoot !== true}}">
+            <span>{{qData.order}}. {{qData.typeName}}</span>
+            <paper-input-decorator label="{{label}}">
+                <input value="{{qData.name}}" is="core-input"/>
+            </paper-input-decorator>
+        </template>
+    </template>
+    <script>
+        Polymer({
+            label: "Type the name of the question"
+        });
+    </script>
+</polymer-element>

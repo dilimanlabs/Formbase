@@ -1,0 +1,30 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="q-text-field.html"/>
+<link rel="import" href="q-multiple-choice.html"/>
+<link rel="import" href="q-check-list.html"/>
+<link rel="import" href="q-switch.html"/>
+<polymer-element name="q-element" attributes="qData">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <div id="main">
+        </div>
+    </template>
+    <script>
+        Polymer({
+            ready: function () {
+                var qElement = document.createElement(this.qData.elName);
+                qElement.name = this.qData.name;
+                qElement.order = this.qData.order;
+                qElement.isRoot = false;
+                if (this.qData.type === 'qMultipleChoice' || this.qData.type === 'qCheckList') {
+                    qElement.choices = this.qData.choices;
+                }
+                this.$.main.appendChild(qElement);
+            }
+        });
+    </script>
+</polymer-element>

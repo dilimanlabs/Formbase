@@ -1,0 +1,15 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../q-components/q-group.html"/>
+<polymer-element name="q-canvas" attributes="qData">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <q-group id="mainForm" qData="{{qData}}" isRoot="{{true}}"></q-group>
+    </template>
+    <script>
+        Polymer({});
+    </script>
+</polymer-element>

@@ -1,0 +1,138 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/core-scaffold/core-scaffold.html"/>
+<link rel="import" href="../components/core-header-panel/core-header-panel.html"/>
+<link rel="import" href="../components/core-toolbar/core-toolbar.html"/>
+<link rel="import" href="../components/core-pages/core-pages.html"/>
+<link rel="import" href="../components/paper-tabs/paper-tabs.html"/>
+<link rel="import" href="../components/paper-tabs/paper-tab.html"/>
+<link rel="import" href="q-canvas.html"/>
+<link rel="import" href="q-tree-view.html"/>
+<link rel="import" href="q-palette.html"/>
+<polymer-element name="q-designer">
+    <template>
+        <style>
+            :host {
+                display: block;
+                height: 100%;
+                width: 100%;
+            }
+            #navHeader {
+                background-color: #56BA89;
+            }
+            .content {
+                padding: 20px;
+            }
+            .sidebar-content {
+                padding: 5px;
+            }
+            #mainCanvas {
+                height: 100%;
+                width: 100%;
+            }
+        </style>
+        <core-scaffold rightDrawer mode="standard" drawerWidth="400px">
+            <core-header-panel navigation flex shadow="true">
+                <core-toolbar id="navHeader" class="medium-tall">
+                    <span flex>Project Tools</span>
+                    <paper-tabs class="bottom fit" selected="{{selected}}">
+                        <paper-tab>Palette</paper-tab>
+                        <paper-tab>Tree View</paper-tab>
+                        <paper-tab>Actions</paper-tab>
+                    </paper-tabs>
+                </core-toolbar>
+                <div class="sidebar-content" fit>
+                    <core-pages selected="{{selected}}">
+                        <div class="view">
+                            <q-palette questionTypes="{{questionTypes}}" on-palette-drag="{{paletteDrag}}"></q-palette>
+                        </div>
+                        <div class="tree">
+                            <q-tree-view qData="{{qData}}"></q-tree-view>
+                        </div>
+                        <div class="view">Hello</div>
+                    </core-pages>
+                </div>
+            </core-header-panel>
+            <span tool>Formbase</span>
+            <div class="content" fit>
+                <q-canvas id="mainCanvas" qData="{{qData}}"></q-canvas>
+            </div>
+        </core-scaffold>
+    </template>
+    <script>
+        var MAX_LEVELS = 3;
+        Polymer({
+            qData: {
+                type: 'qGroup',
+                level: 0,
+                childList: []
+            },
+            questionTypes: [
+                {
+                    typeName: 'Question group',
+                    type: 'qGroup',
+                    elName: 'q-group'
+                },
+                {
+                    typeName: 'Basic Text Field',
+                    type: 'qTextField',
+                    elName: 'q-text-field'
+                },
+                {
+                    typeName: 'Multiple Choices',
+                    type: 'qMultipleChoice',
+                    elName: 'q-multiple-choice'
+                },
+                {
+                    typeName: 'Check List',
+                    type: 'qCheckList',
+                    elName: 'q-check-list'
+                },
+                {
+                    typeName: 'Switch (True/False)',
+                    type: 'qSwitch',
+                    elName: 'q-switch'
+                }
+            ],
+            selected: 0,
+            paletteDrag: function (e, dragInfo) {
+                var qIndex = dragInfo.index;
+                var qType = this.questionTypes[qIndex];
+                var index = this.qData.childList.length;
+                if (qType.type === 'qGroup') {
+                    if (this.qData.level < MAX_LEVELS) {
+                        this.qData.childList.push({
+                            type: qType.type,
+                            typeName: qType.typeName,
+                            name: '',
+                            childList: [],
+                            level: this.qData.level + 1,
+                            order: index + 1
+                        });
+                    } else {
+                        alert("Cannot have more than "+MAX_LEVELS+" levels");
+                    }
+                } else if (qType.type === 'qMultipleChoice' || qType.type === 'qCheckList'){
+                    this.qData.childList.push({
+                        type: qType.type,
+                        typeName: qType.typeName,
+                        name: '',
+                        level: this.qData.level + 1,
+                        order: index + 1,
+                        elName: qType.elName,
+                        choices: []
+                    });
+                }
+                else {
+                    this.qData.childList.push({
+                        type: qType.type,
+                        typeName: qType.typeName,
+                        name: '',
+                        level: this.qData.level + 1,
+                        order: index + 1,
+                        elName: qType.elName
+                    });
+                }
+            }
+        });
+    </script>
+</polymer-element>

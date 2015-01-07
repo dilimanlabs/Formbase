@@ -1,0 +1,152 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/paper-menu-button/paper-menu-button.html"/>
+<link rel="import" href="../components/paper-button/paper-button.html"/>
+<link rel="import" href="../components/core-icon/core-icon.html"/>
+<link rel="import" href="../components/paper-dropdown/paper-dropdown.html"/>
+<link rel="import" href="../components/core-menu/core-menu.html"/>
+<link rel="import" href="q-base-type.html"/>
+<link rel="import" href="q-text-field.html"/>
+<link rel="import" href="q-multiple-choice.html"/>
+<link rel="import" href="q-check-list.html"/>
+<link rel="import" href="q-switch.html"/>
+<link rel="import" href="q-item.html"/>
+<polymer-element name="q-group" extends="q-base-type">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            #main {
+                margin-left: 20px;
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            q-item {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                display: block;
+            }
+
+            html /deep/ core-collapse {
+                border: 1px solid #ccc;
+                padding: 8px;
+            }
+
+            q-group {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+        </style>
+        <shadow></shadow>
+        <div id="main">
+            <template repeat="{{qChild in qData.childList}}">
+                <template if="{{qChild.type === 'qGroup'}}">
+                    <q-group qData="{{qChild}}" isRoot="false"></q-group>
+                </template>
+
+                <!-- If not a group item -->
+                <template if="{{qChild.type === 'qTextField'}}">
+                    <q-text-field qData="{{qChild}}"></q-text-field>
+                </template>
+                <template if="{{qChild.type === 'qMultipleChoice'}}">
+                    <q-multiple-choice qData="{{qChild}}"></q-multiple-choice>
+                </template>
+                <template if="{{qChild.type === 'qCheckList'}}">
+                    <q-check-list qData="{{qChild}}"></q-check-list>
+                </template>
+                <template if="{{qChild.type === 'qSwitch'}}">
+                    <q-switch qData="{{qChild}}"></q-switch>
+                </template>
+
+            </template>
+        </div>
+
+        <paper-menu-button>
+            <paper-button noink raised>
+                <core-icon icon="add"></core-icon>
+                <span style="vertical-align: middle;">Add New</span>
+            </paper-button>
+            <paper-dropdown class="dropdown">
+                <core-menu class="menu">
+                    <template repeat="{{qType in questionTypes}}">
+                        <q-item noink qType="{{qType}}" on-tap="{{addQType}}">{{qType.typeName}}</q-item>
+                    </template>
+                </core-menu>
+            </paper-dropdown>
+        </paper-menu-button>
+
+    </template>
+    <script>
+        var MAX_LEVELS = 3;
+        Polymer({
+            typeName: 'Question Group',
+            label: "Group Name",
+            questionTypes: [
+                {
+                    typeName: 'Question group',
+                    type: 'qGroup',
+                    elName: 'q-group'
+                },
+                {
+                    typeName: 'Basic Text Field',
+                    type: 'qTextField',
+                    elName: 'q-text-field'
+                },
+                {
+                    typeName: 'Multiple Choice',
+                    type: 'qMultipleChoice',
+                    elName: 'q-multiple-choice'
+                },
+                {
+                    typeName: 'Check List',
+                    type: 'qCheckList',
+                    elName: 'q-check-list'
+                },
+                {
+                    typeName: 'Switch (True/False)',
+                    type: 'qSwitch',
+                    elName: 'q-switch'
+                }
+            ],
+            addQType: function (e) {
+                var qItem = e.target;
+                var index = this.qData.childList.length;
+                if (qItem.qType.type === 'qGroup') {
+                    if (this.qData.level < MAX_LEVELS) {
+                        this.qData.childList.push({
+                            type: qItem.qType.type,
+                            typeName: qItem.qType.typeName,
+                            name: '',
+                            childList: [],
+                            level: this.qData.level + 1,
+                            order: index + 1
+                        });
+                    } else {
+                        alert("Cannot have more than "+MAX_LEVELS+" levels");
+                    }
+                } else if (qItem.qType.type === 'qMultipleChoice' || qItem.qType.type === 'qCheckList'){
+                    this.qData.childList.push({
+                        type: qItem.qType.type,
+                        typeName: qItem.qType.typeName,
+                        name: '',
+                        level: this.qData.level + 1,
+                        order: index + 1,
+                        elName: qItem.qType.elName,
+                        choices: []
+                    });
+                }
+                else {
+                    this.qData.childList.push({
+                        type: qItem.qType.type,
+                        typeName: qItem.qType.typeName,
+                        name: '',
+                        level: this.qData.level + 1,
+                        order: index + 1,
+                        elName: qItem.qType.elName
+                    });
+                }
+            }
+        });
+    </script>
+</polymer-element>

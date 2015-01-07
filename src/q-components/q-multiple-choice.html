@@ -1,0 +1,38 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+<link rel="import" href="../components/paper-button/paper-button.html"/>
+<link rel="import" href="../components/core-icon/core-icon.html"/>
+<link rel="import" href="q-base-type.html"/>
+<polymer-element name="q-multiple-choice" extends="q-base-type">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            #choices {
+                margin-left: 20px;
+            }
+        </style>
+        <shadow></shadow>
+        <div id="choices">
+            <template repeat="{{choice in qData.choices}}">
+                <paper-input-decorator label="{{choiceLabel}}">
+                    <input is="core-input" type="text" value="{{choice.name}}"/>
+                </paper-input-decorator>
+            </template>
+        </div>
+        <paper-button raised on-tap="{{addNewChoice}}">
+            <core-icon icon="add"></core-icon>
+            <span>{{buttonName}}</span>
+        </paper-button>
+    </template>
+    <script>
+        Polymer({
+            buttonName: 'Add new choice',
+            choiceLabel: 'Choice',
+            addNewChoice: function (e) {
+                this.qData.choices.push({name: '', index: this.qData.choices.length});
+            }
+        });
+    </script>
+</polymer-element>

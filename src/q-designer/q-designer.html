@@ -8,6 +8,7 @@
 <link rel="import" href="q-canvas.html"/>
 <link rel="import" href="q-tree-view.html"/>
 <link rel="import" href="q-palette.html"/>
+<link rel="import" href="../preview-components/preview-main.html"/>
 <polymer-element name="q-designer">
     <template>
         <style>
@@ -29,15 +30,21 @@
                 height: 100%;
                 width: 100%;
             }
+            core-pages {
+                height: 100%;
+            }
+            preview-main {
+                height: 100%;
+            }
         </style>
-        <core-scaffold rightDrawer mode="standard" drawerWidth="400px">
+        <core-scaffold rightDrawer mode="standard" drawerWidth="700px">
             <core-header-panel navigation flex shadow="true">
                 <core-toolbar id="navHeader" class="medium-tall">
                     <span flex>Project Tools</span>
                     <paper-tabs class="bottom fit" selected="{{selected}}">
                         <paper-tab>Palette</paper-tab>
                         <paper-tab>Tree View</paper-tab>
-                        <paper-tab>Actions</paper-tab>
+                        <paper-tab>Preview</paper-tab>
                     </paper-tabs>
                 </core-toolbar>
                 <div class="sidebar-content" fit>
@@ -48,7 +55,11 @@
                         <div class="tree">
                             <q-tree-view qData="{{qData}}"></q-tree-view>
                         </div>
-                        <div class="view">Hello</div>
+                        <div class="view">
+                            <!-- <button on-click="{{exportJSON}}">Export JSON</button>
+                            <p>{{qDataJSON}}</p> -->
+                            <preview-main qData="{{qData}}"></preview-main>
+                        </div>
                     </core-pages>
                 </div>
             </core-header-panel>
@@ -65,6 +76,10 @@
                 type: 'qGroup',
                 level: 0,
                 childList: []
+            },
+            exportJSON: function () {
+                console.log(JSON.stringify(this.qData, null, '\t'));
+                this.qDataJSON = JSON.stringify(this.qData, null, '\t');
             },
             questionTypes: [
                 {
@@ -95,6 +110,27 @@
             ],
             selected: 0,
             paletteDrag: function (e, dragInfo) {
+                //this.addQuestion(e, dragInfo);
+                var rect = this.$.mainCanvas.getBoundingClientRect();
+                console.log(rect);
+                var targetFinding = window.PolymerGestures.targetFinding;
+                var searchRoot = targetFinding.searchRoot.bind(targetFinding, document);
+                targetFinding = null;
+                var drag = dragInfo.drag;
+                dragInfo.drag = function() {
+                    this.event.clientY -= rect.top;
+                    return drag.apply(this, arguments);
+                };
+
+                // cleanup in drop
+                var drop = dragInfo.drop;
+                dragInfo.drop = function() {
+                    this.event.clientY -= rect.top;
+                    this.event.relatedTarget = searchRoot(this.event.clientX, this.event.clientY);
+                    return drop.apply(this, arguments);
+                };
+            },
+            addQuestion: function (e, dragInfo) {
                 var qIndex = dragInfo.index;
                 var qType = this.questionTypes[qIndex];
                 var index = this.qData.childList.length;

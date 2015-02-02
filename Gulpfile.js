@@ -10,8 +10,8 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('livereload', function () {
-    gulp.src(['src/q-components/**/*.html', 'src/q-designer/**/*.html', 'src/stylesheet/*.css', 'src/index.html'])
-        .pipe(watch(['src/q-components/**/*.html', 'src/q-designer/**/*.html', 'src/stylesheet/*.css', 'src/index.html']))
+    gulp.src(['src/q-components/**/*.html', 'src/q-designer/**/*.html', 'src/stylesheet/*.css', 'src/*.html', 'src/preview-components/*.html'])
+        .pipe(watch(['src/gallery-components/**/*.html', 'src/q-components/**/*.html', 'src/q-designer/**/*.html', 'src/stylesheet/*.css', 'src/*.html', 'src/preview-components/*.html']))
         .pipe(connect.reload());
 });
 

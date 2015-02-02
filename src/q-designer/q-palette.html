@@ -22,8 +22,6 @@
             dragStart: function (e, dragInfo) {
                 dragInfo.index = dragInfo.event.target.getAttribute('index');
                 this.fire('palette-drag', dragInfo);
-                console.log(dragInfo.event.pageX);
-                console.log(dragInfo.event.pageY);
                 dragInfo.delegateDrop = dragInfo.drop;
                 dragInfo.drop = this.drop.bind(this);
             },

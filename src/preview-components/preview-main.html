@@ -1,0 +1,73 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+<link rel="import" href="../components/paper-toggle-button/paper-toggle-button.html"/>
+<link rel="import" href="../components/paper-radio-button/paper-radio-button.html"/>
+<link rel="import" href="../components/paper-radio-group/paper-radio-group.html"/>
+<link rel="import" href="../components/paper-checkbox/paper-checkbox.html"/>
+<link rel="import" href="../components/core-label/core-label.html"/>
+
+<polymer-element name="preview-main" attributes="qData">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            .main-content {
+                height: 100%;
+            }
+            paper-radio-button {
+                display: block;
+            }
+            core-label {
+                padding: 20px 20px 20px 0;
+            }
+            paper-checkbox {
+                padding: 0 20px 0 20px;
+            }
+            .question-body {
+                margin-left: 5px;
+            }
+            paper-toggle-button {
+                padding: 20px;
+            }
+        </style>
+        <div class="main-content">
+            <template repeat="{{qData.childList}}" id="group">
+                <div class="question">
+                    <div class="question-name">{{order}}. {{name}}</div>
+                    <div class="question-body">
+                        <template if="{{type === 'qGroup'}}">
+                            <template ref="group" repeat="{{childList}}"></template>
+                        </template>
+                        <template if="{{type === 'qTextField'}}">
+                            <paper-input-decorator>
+                                <input is="core-input" type="text"/>
+                            </paper-input-decorator>
+                        </template>
+                        <template if="{{type === 'qSwitch'}}">
+                            <paper-toggle-button></paper-toggle-button>
+                        </template>
+                        <template if="{{type === 'qMultipleChoice'}}">
+                            <paper-radio-group>
+                                <template repeat="{{choice in choices}}">
+                                    <paper-radio-button name="{{choice.index}}" label="{{choice.name}}"></paper-radio-button>
+                                </template>
+                            </paper-radio-group>
+                        </template>
+                        <template if="{{type === 'qCheckList'}}">
+                            <template repeat="{{choice in choices}}">
+                                <core-label horizontal layout>
+                                    <paper-checkbox for></paper-checkbox>
+                                    <div flex>{{choice.name}}</div>
+                                </core-label>
+                            </template>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </template>
+    <script>
+        Polymer({});
+    </script>
+</polymer-element>

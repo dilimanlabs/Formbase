@@ -1,0 +1,58 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/core-list/core-list.html"/>
+<link rel="import" href="../components/core-icon/core-icon.html"/>
+<link rel="import" href="../components/core-icon-button/core-icon-button.html"/>
+<link rel="import" href="../components/paper-shadow/paper-shadow.html"/>
+
+<polymer-element name="gallery-list" attributes="files grid">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            .item {
+                width: 220px;
+                height: 300px;
+            }
+            .item .container {
+                height: 280px;
+                width: 200px;
+            }
+            core-list {
+                height: 100%;
+            }
+        </style>
+        <template if="{{grid}}">
+            <core-list data="{{files}}" grid height="300" width="220" flex on-core-activate="{{fileSelected}}">
+                <template>
+                    <div class="item" vertical center-justified center layout>
+                        <paper-shadow class="container" z=1 vertical layout>
+                            <div horizontal center-justified layout style="background-color: rgba(157, 194, 232, 0.15); height: 186px;">
+                            </div>
+                            <div flex horizontal layout style="background-color: #f5f5f5; padding:10px 0 10px 20px;">
+                                <div flex three vertical layout>
+                                    <span flex>{{model.name}}</span>
+                                    <span flex style="font-size: 12px;">{{model.dateCreated | toReadableDate}}</span>
+                                </div>
+                                <span flex horizontal layout center end-justified><core-icon-button icon="more-vert"></core-icon-button></span>
+                            </div>
+                        </paper-shadow>
+                    </div>
+                </template>
+            </core-list>
+        </template>
+    </template>
+    <script>
+        Polymer({
+            ready: function () {},
+            toReadableDate: function (value) {
+                var date = new Date(value);
+                return date.toDateString();
+            },
+            grid: true,
+            fileSelected: function (e, detail) {
+                this.fire('file-selected', detail);
+            }
+        });
+    </script>
+</polymer-element>

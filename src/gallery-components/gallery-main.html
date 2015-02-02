@@ -1,0 +1,112 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/core-header-panel/core-header-panel.html"/>
+<link rel="import" href="../components/core-scaffold/core-scaffold.html"/>
+<link rel="import" href="../components/core-toolbar/core-toolbar.html"/>
+<link rel="import" href="../components/core-icon-button/core-icon-button.html"/>
+<link rel="import" href="../components/core-icon/core-icon.html"/>
+<link rel="import" href="../components/core-list/core-list.html"/>
+<link rel="import" href="../components/paper-fab/paper-fab.html"/>
+<link rel="import" href="../components/paper-dialog/paper-action-dialog.html"/>
+<link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+<link rel="import" href="../components/paper-button/paper-button.html"/>
+<link rel="import" href="../components/paper-icon-button/paper-icon-button.html"/>
+<link rel="import" href="../components/core-toolbar/core-toolbar.html"/>
+
+<link rel="import" href="gallery-list.html"/>
+
+<polymer-element name="gallery-main">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            #title {
+                margin: 0 0 50px 100px;
+                font-size: 30px;
+            }
+            paper-fab {
+                position: absolute !important;
+                top: 35px;
+                left: 1em;
+                z-index: 1;
+            }
+            .content {
+                padding: 80px;
+            }
+            gallery-list {
+                display: block;
+                height: 100%;
+                margin: 0 auto;
+            }
+
+            core-scaffold::shadow core-toolbar {
+                background-color: #e38217;
+            }
+
+        </style>
+        <core-scaffold rightDrawer mode="waterfall-tall" drawerWidth="400px" responsiveWidth="1000px">
+            <core-header-panel navigation flex mode="seamed">
+                <core-toolbar class="tall">
+                    <div class="top" flex horizontal layout end-justified>
+                        <paper-icon-button icon="launch"></paper-icon-button>
+                        <paper-icon-button icon="delete"></paper-icon-button>
+                        <paper-icon-button icon="more-vert"></paper-icon-button>
+                    </div>
+                    <div class="bottom" flex vertical layout>
+                        <template bind="{{currentFileSelected}}">
+                            <div flex>{{name}}</div>
+                        </template>
+                    </div>
+                </core-toolbar>
+            </core-header-panel>
+            <div tool flex horizontal layout class="top">
+                <span flex><paper-icon-button icon="menu"></paper-icon-button></span>
+                <span flex horizontal layout end-justified>
+                    <paper-icon-button icon="search"></paper-icon-button>
+                    <paper-icon-button icon="{{currentLayout | layoutIcon}}" on-tap="{{changeLayout}}"></paper-icon-button>
+                    <paper-icon-button icon="info"></paper-icon-button>
+                </span>
+            </div>
+            <div tool flex class="bottom" id="title">
+                <span>Formbase</span>
+                <paper-fab icon="add" on-tap="{{openNewFormDlg}}"></paper-fab>
+            </div>
+            <div class="content" fit flex>
+                <gallery-list files="{{files}}" on-file-selected="{{fileSelected}}"></gallery-list>
+            </div>
+            <paper-action-dialog id="newFormDialog" transition="core-transition-center" heading="Add new Form">
+                <paper-input-decorator label="Form Name">
+                    <input is="core-input" type="text" value="{{newFileName}}"/>
+                </paper-input-decorator>
+                <paper-button affirmative autofocus disabled="{{!newFileName}}" on-tap="{{addNewFile}}">Save</paper-button>
+                <paper-button dismissive>Cancel</paper-button>
+            </paper-action-dialog>
+        </core-scaffold>
+    </template>
+    <script>
+        Polymer({
+            files: [],
+            currentLayout: 'grid',
+            openNewFormDlg: function () {
+                this.newFileName = !!this.newFileName ? null : this.newFileName;
+                this.$.newFormDialog.toggle();
+            },
+            layoutIcon: function (layout) {
+                return layout === 'grid' ? 'view-module' : 'list';
+            },
+            changeLayout: function () {
+                this.currentLayout = this.currentLayout === 'grid' ? 'list' : 'grid';
+            },
+            addNewFile: function () {
+                this.files.push({
+                    name: this.newFileName,
+                    icon: 'assignment',
+                    dateCreated: new Date().toUTCString()
+                });
+            },
+            fileSelected: function (e, detail) {
+                this.currentFileSelected = detail.data;
+            }
+        });
+    </script>
+</polymer-element>

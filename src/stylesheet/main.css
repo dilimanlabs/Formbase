@@ -16,3 +16,7 @@ body {
     font-family: "Roboto", sans-serif;
     margin: 0 auto;
 }
+html /deep/ paper-action-dialog::shadow #scroller {
+    height: 377px;
+    width: 610px;
+}

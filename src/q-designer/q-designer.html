@@ -5,6 +5,8 @@
 <link rel="import" href="../components/core-pages/core-pages.html"/>
 <link rel="import" href="../components/paper-tabs/paper-tabs.html"/>
 <link rel="import" href="../components/paper-tabs/paper-tab.html"/>
+<link rel="import" href="../components/paper-button/paper-button.html"/>
+<link rel="import" href="../components/core-ajax/core-ajax.html"/>
 <link rel="import" href="q-canvas.html"/>
 <link rel="import" href="q-tree-view.html"/>
 <link rel="import" href="q-palette.html"/>
@@ -45,6 +47,7 @@
                         <paper-tab>Palette</paper-tab>
                         <paper-tab>Tree View</paper-tab>
                         <paper-tab>Preview</paper-tab>
+                        <paper-tab>Actions</paper-tab>
                     </paper-tabs>
                 </core-toolbar>
                 <div class="sidebar-content" fit>
@@ -55,10 +58,14 @@
                         <div class="tree">
                             <q-tree-view qData="{{qData}}"></q-tree-view>
                         </div>
-                        <div class="view">
+                        <div class="preview">
                             <!-- <button on-click="{{exportJSON}}">Export JSON</button>
                             <p>{{qDataJSON}}</p> -->
                             <preview-main qData="{{qData}}"></preview-main>
+                        </div>
+                        <div class="actions">
+                            <core-ajax id="serverDB" url="//localhost:3000/api/v0.1/forms" method="POST" on-core-response="handleResponse" contentType="application/json"></core-ajax>
+                            <paper-button raised on-tap="{{saveChanges}}">Save</paper-button>
                         </div>
                     </core-pages>
                 </div>
@@ -168,6 +175,10 @@
                         elName: qType.elName
                     });
                 }
+            },
+            saveChanges: function () {
+                this.$.serverDB.body = this.qData;
+                this.$.serverDB.go();
             }
         });
     </script>

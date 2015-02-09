@@ -1,14 +1,19 @@
 <link rel="import" href="../components/polymer/polymer.html"/>
 <link rel="import" href="../components/paper-menu-button/paper-menu-button.html"/>
 <link rel="import" href="../components/paper-button/paper-button.html"/>
+<link rel="import" href="../components/paper-toggle-button/paper-toggle-button.html"/>
 <link rel="import" href="../components/core-icon/core-icon.html"/>
 <link rel="import" href="../components/paper-dropdown/paper-dropdown.html"/>
+<link rel="import" href="../components/paper-shadow/paper-shadow.html"/>
 <link rel="import" href="../components/core-menu/core-menu.html"/>
 <link rel="import" href="q-base-type.html"/>
 <link rel="import" href="q-text-field.html"/>
 <link rel="import" href="q-multiple-choice.html"/>
 <link rel="import" href="q-check-list.html"/>
 <link rel="import" href="q-switch.html"/>
+<link rel="import" href="q-number-field.html"/>
+<link rel="import" href="q-date-field.html"/>
+<link rel="import" href="q-image-field.html"/>
 <link rel="import" href="q-item.html"/>
 <polymer-element name="q-group" extends="q-base-type">
     <template>
@@ -37,44 +42,65 @@
                 margin-top: 10px;
                 margin-bottom: 10px;
             }
+            #card {
+                padding: 15px;
+                height: 100%;
+                background-color: #ffffff;
+            }
         </style>
-        <shadow></shadow>
-        <div id="main">
-            <template repeat="{{qChild in qData.childList}}">
-                <template if="{{qChild.type === 'qGroup'}}">
-                    <q-group qData="{{qChild}}" isRoot="false"></q-group>
-                </template>
-
-                <!-- If not a group item -->
-                <template if="{{qChild.type === 'qTextField'}}">
-                    <q-text-field qData="{{qChild}}"></q-text-field>
-                </template>
-                <template if="{{qChild.type === 'qMultipleChoice'}}">
-                    <q-multiple-choice qData="{{qChild}}"></q-multiple-choice>
-                </template>
-                <template if="{{qChild.type === 'qCheckList'}}">
-                    <q-check-list qData="{{qChild}}"></q-check-list>
-                </template>
-                <template if="{{qChild.type === 'qSwitch'}}">
-                    <q-switch qData="{{qChild}}"></q-switch>
-                </template>
-
+        <paper-shadow id="card" z="1">
+            <shadow></shadow>
+            <template if="{{isRoot !== true}}">
+                <div center horizontal layout>
+                    <div flex>Repeated</div>
+                    <paper-toggle-button on-change="{{changeRepeating}}"></paper-toggle-button>
+                </div>
             </template>
-        </div>
-
-        <paper-menu-button>
-            <paper-button noink raised>
-                <core-icon icon="add"></core-icon>
-                <span style="vertical-align: middle;">Add New</span>
-            </paper-button>
-            <paper-dropdown class="dropdown">
-                <core-menu class="menu">
-                    <template repeat="{{qType in questionTypes}}">
-                        <q-item noink qType="{{qType}}" on-tap="{{addQType}}">{{qType.typeName}}</q-item>
+            <div id="main">
+                <template repeat="{{qChild in qData.childList}}">
+                    <template if="{{qChild.type === 'qGroup'}}">
+                        <q-group qData="{{qChild}}" isRoot="false"></q-group>
                     </template>
-                </core-menu>
-            </paper-dropdown>
-        </paper-menu-button>
+
+                    <!-- If not a group item -->
+                    <template if="{{qChild.type === 'qTextField'}}">
+                        <q-text-field qData="{{qChild}}"></q-text-field>
+                    </template>
+                    <template if="{{qChild.type === 'qNumberField'}}">
+                        <q-number-field qData="{{qChild}}"></q-number-field>
+                    </template>
+                    <template if="{{qChild.type === 'qMultipleChoice'}}">
+                        <q-multiple-choice qData="{{qChild}}"></q-multiple-choice>
+                    </template>
+                    <template if="{{qChild.type === 'qCheckList'}}">
+                        <q-check-list qData="{{qChild}}"></q-check-list>
+                    </template>
+                    <template if="{{qChild.type === 'qSwitch'}}">
+                        <q-switch qData="{{qChild}}"></q-switch>
+                    </template>
+                    <template if="{{qChild.type === 'qDateField'}}">
+                        <q-date-field qData="{{qChild}}"></q-date-field>
+                    </template>
+                    <template if="{{qChild.type === 'qImageField'}}">
+                        <q-image-field qData="{{qChild}}"></q-image-field>
+                    </template>
+                </template>
+            </div>
+
+            <paper-menu-button>
+                <paper-button noink raised>
+                    <core-icon icon="add"></core-icon>
+                    <span style="vertical-align: middle;">Add New</span>
+                </paper-button>
+                <paper-dropdown class="dropdown">
+                    <core-menu class="menu">
+                        <template repeat="{{qType in questionTypes}}">
+                            <q-item noink qType="{{qType}}" on-tap="{{addQType}}">{{qType.typeName}}</q-item>
+                        </template>
+                    </core-menu>
+                </paper-dropdown>
+            </paper-menu-button>
+        </paper-shadow>
 
     </template>
     <script>
@@ -107,6 +133,21 @@
                     typeName: 'Switch (True/False)',
                     type: 'qSwitch',
                     elName: 'q-switch'
+                },
+                {
+                    typeName: 'Number field',
+                    type: 'qNumberField',
+                    elName: 'q-number-field'
+                },
+                {
+                    typeName: 'Date field',
+                    type: 'qDateField',
+                    elName: 'q-date-field'
+                },
+                {
+                    typeName: 'Image field',
+                    type: 'qImageField',
+                    elName: 'q-image-field'
                 }
             ],
             addQType: function (e) {
@@ -120,7 +161,8 @@
                             name: '',
                             childList: [],
                             level: this.qData.level + 1,
-                            order: index + 1
+                            order: index + 1,
+                            isRepeating: false
                         });
                     } else {
                         alert("Cannot have more than "+MAX_LEVELS+" levels");
@@ -135,6 +177,18 @@
                         elName: qItem.qType.elName,
                         choices: []
                     });
+                } else if(qItem.qType.type === 'qNumberField') {
+                    this.qData.childList.push({
+                        type: qItem.qType.type,
+                        typeName: qItem.qType.typeName,
+                        name: '',
+                        level: this.qData.level + 1,
+                        order: index + 1,
+                        elName: qItem.qType.elName,
+                        ranged: false,
+                        minimum: 0,
+                        maximum: 100
+                    });
                 }
                 else {
                     this.qData.childList.push({
@@ -146,6 +200,9 @@
                         elName: qItem.qType.elName
                     });
                 }
+            },
+            changeRepeating: function () {
+                this.qData.isRepeating = !this.qData.isRepeating;
             }
         });
     </script>

@@ -1,0 +1,48 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/paper-toggle-button/paper-toggle-button.html"/>
+<link rel="import" href="../components/paper-shadow/paper-shadow.html"/>
+<link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+
+<link rel="import" href="q-base-type.html"/>
+<polymer-element name="q-number-field" extends="q-base-type">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+            #card {
+                padding: 15px;
+                height: 100%;
+                background-color: #ffffff;
+            }
+        </style>
+        <paper-shadow id="card" z="1">
+            <shadow></shadow>
+            <div center horizontal layout>
+                <div flex>Ranged?</div>
+                <paper-toggle-button on-change="{{changeRanged}}"></paper-toggle-button>
+            </div>
+            <template if="{{qData.ranged}}">
+                <div center horizontal layout>
+                    <div flex>Minimum</div>
+                    <paper-input-decorator>
+                        <input type="number" is="core-input" value="{{qData.minimum}}" step="0.1"/>
+                    </paper-input-decorator>
+                </div>
+                <div center horizontal layout>
+                    <div flex>Maximum</div>
+                    <paper-input-decorator>
+                        <input type="number" is="core-input" value="{{qData.maximum}}" preventInvalidInput step="0.1"/>
+                    </paper-input-decorator>
+                </div>
+            </template>
+        </paper-shadow>
+    </template>
+    <script>
+        Polymer({
+            changeRanged: function () {
+                this.qData.ranged = !this.qData.ranged;
+            }
+        });
+    </script>
+</polymer-element>

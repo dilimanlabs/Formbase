@@ -2,9 +2,12 @@
 <link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
 <link rel="import" href="../components/paper-toggle-button/paper-toggle-button.html"/>
 <link rel="import" href="../components/paper-radio-button/paper-radio-button.html"/>
+<link rel="import" href="../components/paper-button/paper-button.html"/>
 <link rel="import" href="../components/paper-radio-group/paper-radio-group.html"/>
+<link rel="import" href="../components/paper-slider/paper-slider.html"/>
 <link rel="import" href="../components/paper-checkbox/paper-checkbox.html"/>
 <link rel="import" href="../components/core-label/core-label.html"/>
+<link rel="import" href="../components/core-input/core-input.html"/>
 
 <polymer-element name="preview-main" attributes="qData">
     <template>
@@ -25,10 +28,13 @@
                 padding: 0 20px 0 20px;
             }
             .question-body {
-                margin-left: 5px;
+                margin-left: 15px;
             }
             paper-toggle-button {
                 padding: 20px;
+            }
+            paper-slider {
+                width: 100%;
             }
         </style>
         <div class="main-content">
@@ -37,7 +43,12 @@
                     <div class="question-name">{{order}}. {{name}}</div>
                     <div class="question-body">
                         <template if="{{type === 'qGroup'}}">
-                            <template ref="group" repeat="{{childList}}"></template>
+                            <template if="{{isRepeating === true}}">
+                                <paper-button on-tap="{{addNewGroup}}" raised id="insertNewGroupHere">Add</paper-button>
+                            </template>
+                            <template if="{{isRepeating !== true}}">
+                                <template ref="group" repeat="{{childList}}"></template>
+                            </template>
                         </template>
                         <template if="{{type === 'qTextField'}}">
                             <paper-input-decorator>
@@ -62,12 +73,26 @@
                                 </core-label>
                             </template>
                         </template>
+                        <template if="{{type === 'qNumberField'}}">
+                            <template if="{{ranged}}">
+                                <paper-slider min="{{minimum}}" max="{{maximum}}" editable></paper-slider>
+                            </template>
+                            <template if="{{!ranged}}">
+                                <paper-input-decorator>
+                                    <input type="number" is="core-input" step="0.1" preventInvalidInput/>
+                                </paper-input-decorator>
+                            </template>
+                        </template>
                     </div>
                 </div>
             </template>
         </div>
     </template>
     <script>
-        Polymer({});
+        Polymer({
+            addNewGroup: function (e) {
+
+            }
+        });
     </script>
 </polymer-element>

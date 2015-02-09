@@ -1,4 +1,5 @@
 <link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/paper-shadow/paper-shadow.html"/>
 <link rel="import" href="q-base-type.html"/>
 <polymer-element name="q-switch" extends="q-base-type">
     <template>
@@ -6,8 +7,15 @@
             :host {
                 display: block;
             }
+            #card {
+                padding: 15px;
+                height: 100%;
+                background-color: #ffffff;
+            }
         </style>
-        <shadow></shadow>
+        <paper-shadow id="card" z="1">
+            <shadow></shadow>
+        </paper-shadow>
     </template>
     <script>
         Polymer({});

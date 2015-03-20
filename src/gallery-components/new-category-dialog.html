@@ -1,0 +1,25 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/paper-dialog/paper-action-dialog.html"/>
+<link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+<link rel="import" href="../components/paper-button/paper-button.html"/>
+
+<polymer-element name="new-category-dialog" attributes="">
+    <template>
+        <paper-action-dialog heading="New Category" id="newCatDialog" transition="core-transition-center" backdrop autoFocusDisabled>
+            <div class="content">
+                <paper-input-decorator label="Category Name">
+                    <input type="text" is="core-input" value="newCatName"/>
+                </paper-input-decorator>
+            </div>
+            <paper-button affirmative>Cancel</paper-button>
+            <paper-button affirmative>Ok</paper-button>
+        </paper-action-dialog>
+    </template>
+    <script>
+        Polymer("new-category-dialog", {
+            toggle: function () {
+                this.$.newCatDialog.toggle();
+            }
+        });
+    </script>
+</polymer-element>

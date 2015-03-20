@@ -1,37 +1,65 @@
 <link rel="import" href="../components/polymer/polymer.html"/>
 <link rel="import" href="../components/core-drag-drop/core-drag-drop.html"/>
-<link rel="import" href=""/>
+<link rel="import" href="q-palette-item.html"/>
 <polymer-element name="q-palette" vertical layout attributes="questionTypes">
     <template>
         <style>
             :host {
                 display: block;
             }
-            .question-type {
+            q-palette-item {
                 height: 50px;
                 margin: 0 10px;
             }
         </style>
-        <core-drag-drop on-drag-start="{{dragStart}}"></core-drag-drop>
+        <core-drag-drop on-drag-start="{{dragStart}}" ></core-drag-drop>
         <template repeat="{{qType, index in questionTypes}}">
-            <div class="question-type" index="{{index}}" draggable="true">{{qType.typeName}}</div>
+            <q-palette-item qType="{{qType}}" draggable="false" on-track="{{track}}"></q-palette-item>
         </template>
     </template>
     <script>
-        Polymer({
-            dragStart: function (e, dragInfo) {
-                dragInfo.index = dragInfo.event.target.getAttribute('index');
-                this.fire('palette-drag', dragInfo);
-                dragInfo.delegateDrop = dragInfo.drop;
-                dragInfo.drop = this.drop.bind(this);
-            },
-
-            drop: function (dragInfo) {
-                var dropped = false;
-                if (dragInfo.delegateDrop) {
-                    dropped = dragInfo.delegateDrop(dragInfo);
+        (function () {
+            function drop (dragInfo) {
+                var dropTarget = dragInfo.event.relatedTarget.templateInstance.model;
+                if (dropTarget.nodeName === 'Q-GROUP') {
+                    dropTarget.addQuestion(dragInfo.qType);
                 }
             }
-        });
+            function findGroup (group, x, y) {
+                if (group.qData.childList.length > 0) {
+                    var possibleGroup = group.shadowRoot.elementFromPoint(x, y);
+                    if(!!possibleGroup && 'nodeName' in possibleGroup && possibleGroup.nodeName === 'Q-GROUP') {
+                        return findGroup(possibleGroup, x, y);
+                    }
+                }
+                return group;
+            }
+            Polymer({
+                dragStart: function (e) {
+                    var dragInfo = e.detail;
+                    dragInfo.qType = dragInfo.event.target.qType;
+                    dragInfo.avatar.style.cssText = 'border: 3px solid black; width: 32px; height: 32px; border-radius: 32px; background-color: whitesmoke';
+                    dragInfo.drag = function () {};
+                    dragInfo.drop = drop;
+                },
+                track: function (e) {
+                    // A VERY BAD HACK
+                    var x = e.pageX;
+                    var y = e.pageY;
+                    var app = document.elementFromPoint(x, y);
+                    if(app.nodeName === 'FORMBASE-APP') {
+                        var qDesigner = app.shadowRoot.elementFromPoint(x, y);
+                        var qCanvas = qDesigner.shadowRoot.elementFromPoint(x, y);
+                        if (qCanvas.nodeName === 'Q-CANVAS') {
+                            var mainForm = qCanvas.shadowRoot.elementFromPoint(x, y);
+                            if(!!mainForm && mainForm.id === 'mainForm') {
+                                var group = findGroup(mainForm, x, y);
+
+                            }
+                        }
+                    }
+                }
+            });
+        })();
     </script>
 </polymer-element>

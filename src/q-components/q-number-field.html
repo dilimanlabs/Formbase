@@ -13,7 +13,6 @@
             #card {
                 padding: 15px;
                 height: 100%;
-                background-color: #ffffff;
             }
         </style>
         <paper-shadow id="card" z="1">
@@ -42,6 +41,10 @@
         Polymer({
             changeRanged: function () {
                 this.qData.ranged = !this.qData.ranged;
+            },
+            cardBG: '#FAEBEC',
+            ready: function () {
+                this.$.card.style.background = this.cardBG;
             }
         });
     </script>

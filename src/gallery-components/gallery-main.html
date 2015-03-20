@@ -1,112 +1,205 @@
 <link rel="import" href="../components/polymer/polymer.html"/>
-<link rel="import" href="../components/core-header-panel/core-header-panel.html"/>
-<link rel="import" href="../components/core-scaffold/core-scaffold.html"/>
-<link rel="import" href="../components/core-toolbar/core-toolbar.html"/>
-<link rel="import" href="../components/core-icon-button/core-icon-button.html"/>
-<link rel="import" href="../components/core-icon/core-icon.html"/>
-<link rel="import" href="../components/core-list/core-list.html"/>
-<link rel="import" href="../components/paper-fab/paper-fab.html"/>
-<link rel="import" href="../components/paper-dialog/paper-action-dialog.html"/>
-<link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+<link rel="import" href="../components/core-drawer-panel/core-drawer-panel.html">
+<link rel="import" href="../components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../components/core-header-panel/core-header-panel.html">
 <link rel="import" href="../components/paper-button/paper-button.html"/>
-<link rel="import" href="../components/paper-icon-button/paper-icon-button.html"/>
-<link rel="import" href="../components/core-toolbar/core-toolbar.html"/>
+<link rel="import" href="../components/paper-menu-button/paper-menu-button.html"/>
+<link rel="import" href="../components/paper-fab/paper-fab.html"/>
+<link rel="import" href="../components/core-selector/core-selector.html"/>
+<link rel="import" href="../components/paper-dropdown/paper-dropdown.html"/>
+<link rel="import" href="../components/core-menu/core-menu.html"/>
+<link rel="import" href="../components/core-item/core-item.html"/>
+<link rel="import" href="../components/core-list/core-list.html"/>
 
-<link rel="import" href="gallery-list.html"/>
+<link rel="import" href="new-form-dialog.html"/>
+<link rel="import" href="new-category-dialog.html"/>
 
-<polymer-element name="gallery-main">
+<polymer-element name="gallery-main" vertical layout attributes="router">
     <template>
         <style>
             :host {
                 display: block;
-            }
-            #title {
-                margin: 0 0 50px 100px;
-                font-size: 30px;
-            }
-            paper-fab {
-                position: absolute !important;
-                top: 35px;
-                left: 1em;
-                z-index: 1;
-            }
-            .content {
-                padding: 80px;
-            }
-            gallery-list {
-                display: block;
+                width: 100%;
                 height: 100%;
-                margin: 0 auto;
+                box-sizing: border-box;
+                position: absolute;
             }
-
-            core-scaffold::shadow core-toolbar {
-                background-color: #e38217;
+            #titlePanel {
+                height: 80px;
+                width: 100%;
+                background-color: #ff8400;
+                padding-left: 20px;
+                box-sizing: border-box;
+                font-size: 20px;
+                color: #ffffff;
             }
-
+            [drawer] {
+                box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+                background-color: rgb(250, 250, 250);
+            }
+            #statusBar {
+                font-size: 16px;
+                height: 50px;
+                background-color: #fefefe;
+                padding-left: 320px;
+            }
+            .main {
+                background-color: #ffffff;
+            }
+            .menu .menu-item {
+                height: 50px;
+                padding-left: 20px;
+                cursor: pointer;
+                font-weight: 300;
+            }
+            .menu-item.core-selected {
+                font-weight: bold;
+            }
+            #sortBar {
+                height: 40px;
+                background-color: #f5f5f5;
+            }
+            #sortBar div {
+                padding-left: 20px;
+                cursor: pointer;
+            }
+            #addNewButton {
+                background: #F44336;
+                color: #ffffff;
+                margin-top: 10px;
+                border-radius: 0;
+            }
+            paper-menu-button {
+                box-sizing: border-box;
+                margin-left: 15px;
+                margin-right: 15px;
+            }
+            .row {
+                box-sizing: border-box;
+                height: 40px;
+                border-bottom: 1px solid rgba(40, 40, 40, 0.1);
+                cursor: default;
+            }
+            .row span {
+                padding-left: 20px;
+            }
+            .row.selected {
+                background-color: #255def;
+                color: #ffffff;
+            }
         </style>
-        <core-scaffold rightDrawer mode="waterfall-tall" drawerWidth="400px" responsiveWidth="1000px">
-            <core-header-panel navigation flex mode="seamed">
-                <core-toolbar class="tall">
-                    <div class="top" flex horizontal layout end-justified>
-                        <paper-icon-button icon="launch"></paper-icon-button>
-                        <paper-icon-button icon="delete"></paper-icon-button>
-                        <paper-icon-button icon="more-vert"></paper-icon-button>
-                    </div>
-                    <div class="bottom" flex vertical layout>
-                        <template bind="{{currentFileSelected}}">
-                            <div flex>{{name}}</div>
-                        </template>
-                    </div>
-                </core-toolbar>
-            </core-header-panel>
-            <div tool flex horizontal layout class="top">
-                <span flex><paper-icon-button icon="menu"></paper-icon-button></span>
-                <span flex horizontal layout end-justified>
-                    <paper-icon-button icon="search"></paper-icon-button>
-                    <paper-icon-button icon="{{currentLayout | layoutIcon}}" on-tap="{{changeLayout}}"></paper-icon-button>
-                    <paper-icon-button icon="info"></paper-icon-button>
-                </span>
+        <!-- New Form Dialog -->
+        <new-form-dialog id="newFormDlg" on-add-form="{{addNewForm}}"></new-form-dialog>
+        <!-- end -->
+
+        <!-- New Category Dialog -->
+        <!-- end -->
+        <div id="titlePanel" horizontal layout center>
+            <span>Formbase</span>
+        </div>
+        <core-header-panel mode="seamed" flex>
+            <div id="statusBar" class="core-header" horizontal layout center>
+                <div>Forms</div>
             </div>
-            <div tool flex class="bottom" id="title">
-                <span>Formbase</span>
-                <paper-fab icon="add" on-tap="{{openNewFormDlg}}"></paper-fab>
+            <div class="main" fit>
+                <core-drawer-panel drawerWidth="300px">
+                    <core-header-panel drawer mode="seamed">
+                        <paper-menu-button horizontal layout flex>
+                            <paper-button id="addNewButton" flex>New</paper-button>
+                            <paper-dropdown class="dropdown" halign="left" transition="">
+                                <core-menu class="menu">
+                                    <core-item on-tap="{{showAddNewCategory}}">New Category</core-item>
+                                    <core-item on-tap="{{addNewForm}}">New Form</core-item>
+                                </core-menu>
+                            </paper-dropdown>
+                        </paper-menu-button>
+
+                        <core-selector class="menu" selected="0">
+                            <div class="menu-item" horizontal layout center>Forms</div>
+                            <div class="menu-item" horizontal layout center>Recent</div>
+                            <div class="menu-item" horizontal layout center>Archived</div>
+                            <div class="menu-item" horizontal layout center>Trash</div>
+                        </core-selector>
+                    </core-header-panel>
+                    <core-header-panel main mode="seamed">
+                        <div id="sortBar" class="core-header" horizontal layout center>
+                            <div flex>Name</div>
+                            <div flex>Owner</div>
+                            <div flex>Last Modified</div>
+                        </div>
+                        <div class="content" fit vertical layout>
+                            <core-list id="formList" data="{{forms}}" height="40" flex multi?="{{multi}}" selection="{{selection}}" on-keydown="{{ctrlDown}}" on-keyup="{{ctrlUp}}">
+                                <template>
+                                    <div class="row {{ {selected: selected} | tokenList }}" horizontal layout center on-dblclick="{{selectForm}}" on-tap="{{checkMult}}">
+                                        <span flex>{{model.name}}</span>
+                                        <span flex>Me</span>
+                                        <span flex>{{model.dateCreated}}</span>
+                                    </div>
+                                </template>
+                            </core-list>
+                        </div>
+                    </core-header-panel>
+                </core-drawer-panel>
             </div>
-            <div class="content" fit flex>
-                <gallery-list files="{{files}}" on-file-selected="{{fileSelected}}"></gallery-list>
-            </div>
-            <paper-action-dialog id="newFormDialog" transition="core-transition-center" heading="Add new Form">
-                <paper-input-decorator label="Form Name">
-                    <input is="core-input" type="text" value="{{newFileName}}"/>
-                </paper-input-decorator>
-                <paper-button affirmative autofocus disabled="{{!newFileName}}" on-tap="{{addNewFile}}">Save</paper-button>
-                <paper-button dismissive>Cancel</paper-button>
-            </paper-action-dialog>
-        </core-scaffold>
+        </core-header-panel>
     </template>
+
     <script>
+
         Polymer({
-            files: [],
-            currentLayout: 'grid',
-            openNewFormDlg: function () {
-                this.newFileName = !!this.newFileName ? null : this.newFileName;
-                this.$.newFormDialog.toggle();
+            forms: [
+                {
+                    name: 'Form1',
+                    desc: 'lorem',
+                    enableSignature: false,
+                    dateCreated:new Date().toUTCString()
+                },
+                {
+                    name: 'Form2',
+                    desc: 'lorem',
+                    enableSignature: false,
+                    dateCreated:new Date().toUTCString()
+                },
+                {
+                    name: 'Form3',
+                    desc: 'lorem',
+                    enableSignature: false,
+                    dateCreated:new Date().toUTCString()
+                }
+            ],
+            showAddNewFormDlg: function () {
+                this.$.newFormDlg.toggle();
             },
-            layoutIcon: function (layout) {
-                return layout === 'grid' ? 'view-module' : 'list';
+            showAddNewCategory: function () {
+
             },
-            changeLayout: function () {
-                this.currentLayout = this.currentLayout === 'grid' ? 'list' : 'grid';
-            },
-            addNewFile: function () {
-                this.files.push({
-                    name: this.newFileName,
-                    icon: 'assignment',
-                    dateCreated: new Date().toUTCString()
+            addNewForm: function (e) {
+                this.forms.push({
+
                 });
+                this.router.go()
             },
-            fileSelected: function (e, detail) {
-                this.currentFileSelected = detail.data;
+            selectForm: function () {
+                this.router.go("/forms/0");
+            },
+            ctrlDown: function (e) {
+                if (e.ctrlKey) {
+                    this.multi = true;
+                }
+            },
+            ctrlUp: function(e) {
+                if (!!this.selection && this.selection.length == 0) {
+                    this.multi = false;
+                }
+            },
+            checkMult: function (e) {
+                if (!e.ctrlKey) {
+                    this.multi = false;
+                }
             }
         });
+
     </script>
+
 </polymer-element>

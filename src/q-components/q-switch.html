@@ -10,7 +10,6 @@
             #card {
                 padding: 15px;
                 height: 100%;
-                background-color: #ffffff;
             }
         </style>
         <paper-shadow id="card" z="1">
@@ -18,6 +17,11 @@
         </paper-shadow>
     </template>
     <script>
-        Polymer({});
+        Polymer({
+            cardBG: '#E2F0EA',
+            ready: function () {
+                this.$.card.style.background = this.cardBG;
+            }
+        });
     </script>
 </polymer-element>

@@ -1,7 +1,8 @@
 <link rel="import" href="../components/polymer/polymer.html"/>
-<link rel="import" href="../components/core-input/core-input.html"/>
+<link rel="import" href="../components/paper-input/paper-autogrow-textarea.html"/>
 <link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
-<polymer-element name="q-base-type" attributes="qData isRoot">
+<link rel="import" href="../components/paper-icon-button/paper-icon-button.html"/>
+<polymer-element name="q-base-type" attributes="qData isRoot order">
     <template>
         <style>
             :host {
@@ -10,17 +11,29 @@
                 margin: 1px;
                 min-height: 100px;
             }
+            #closeButton {
+                position: absolute !important;
+                right: 0;
+                top: 0;
+                color: #777;
+            }
         </style>
         <template if="{{isRoot !== true}}">
-            <span>{{qData.order}}. {{qData.typeName}}</span>
+            <paper-icon-button icon="close" id="closeButton" on-tap="{{closeTapped}}"></paper-icon-button>
+            <span>{{order+1}}. {{qData.typeName}}</span>
             <paper-input-decorator label="{{label}}">
-                <input value="{{qData.name}}" is="core-input"/>
+                <paper-autogrow-textarea>
+                    <textarea value="{{qData.name}}"></textarea>
+                </paper-autogrow-textarea>
             </paper-input-decorator>
         </template>
     </template>
     <script>
         Polymer({
-            label: "Type the name of the question"
+            label: "Type the name of the question",
+            closeTapped: function () {
+                this.fire('close-tap');
+            }
         });
     </script>
 </polymer-element>

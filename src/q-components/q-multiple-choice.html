@@ -1,5 +1,6 @@
 <link rel="import" href="../components/polymer/polymer.html"/>
 <link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+<link rel="import" href="../components/paper-icon-button/paper-icon-button.html"/>
 <link rel="import" href="../components/paper-shadow/paper-shadow.html"/>
 <link rel="import" href="../components/paper-button/paper-button.html"/>
 <link rel="import" href="../components/core-icon/core-icon.html"/>
@@ -16,16 +17,18 @@
             #card {
                 padding: 15px;
                 height: 100%;
-                background-color: #ffffff;
             }
         </style>
         <paper-shadow id="card" z="1">
             <shadow></shadow>
             <div id="choices">
-                <template repeat="{{choice in qData.choices}}">
-                    <paper-input-decorator label="{{choiceLabel}}">
-                        <input is="core-input" type="text" value="{{choice.name}}"/>
-                    </paper-input-decorator>
+                <template repeat="{{choice, choiceIndex in qData.choices}}">
+                    <div class="choice" horizontal layout>
+                        <paper-input-decorator label="{{choiceLabel}}" flex>
+                            <input is="core-input" type="text" value="{{choice.name}}"/>
+                        </paper-input-decorator>
+                        <paper-icon-button icon="close" data-index="{{choiceIndex}}" on-tap="{{removeChoice}}"></paper-icon-button>
+                    </div>
                 </template>
             </div>
             <paper-button raised on-tap="{{addNewChoice}}">
@@ -39,7 +42,15 @@
             buttonName: 'Add new choice',
             choiceLabel: 'Choice',
             addNewChoice: function (e) {
-                this.qData.choices.push({name: '', index: this.qData.choices.length});
+                this.qData.choices.push({name: ''});
+            },
+            removeChoice: function (e, detail, sender) {
+                var index = parseInt(e.target.dataset['index']);
+                this.qData.choices.splice(index, 1);
+            },
+            cardBG: '#F7F5EA',
+            ready: function () {
+                this.$.card.style.background = this.cardBG;
             }
         });
     </script>

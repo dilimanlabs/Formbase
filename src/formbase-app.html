@@ -1,0 +1,25 @@
+<link rel="import" href="components/polymer/polymer.html"/>
+<link rel="import" href="components/app-router/app-router.html"/>
+<link rel="import" href="components/core-animated-pages/core-animated-pages.html"/>
+<link rel="import" href="gallery-components/gallery-main.html"/>
+<link rel="import" href="q-designer/q-designer.html"/>
+
+<polymer-element name="formbase-app">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+        </style>
+        <app-router>
+            <app-route path="/" element="gallery-main" bindRouter></app-route>
+            <app-route path="/forms/:formID" element="q-designer"></app-route>
+            <app-route path="*" redirect="/"></app-route>
+        </app-router>
+    </template>
+    <script>
+        Polymer({
+
+        });
+    </script>
+</polymer-element>

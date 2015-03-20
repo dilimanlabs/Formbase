@@ -17,6 +17,6 @@ body {
     margin: 0 auto;
 }
 html /deep/ paper-action-dialog::shadow #scroller {
-    height: 377px;
-    width: 610px;
+    height: 500px;
+    width: 800px;
 }

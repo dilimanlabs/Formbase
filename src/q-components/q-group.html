@@ -3,6 +3,7 @@
 <link rel="import" href="../components/paper-button/paper-button.html"/>
 <link rel="import" href="../components/paper-toggle-button/paper-toggle-button.html"/>
 <link rel="import" href="../components/core-icon/core-icon.html"/>
+<link rel="import" href="../components/core-drag-drop/core-drag-drop.html"/>
 <link rel="import" href="../components/paper-dropdown/paper-dropdown.html"/>
 <link rel="import" href="../components/paper-shadow/paper-shadow.html"/>
 <link rel="import" href="../components/core-menu/core-menu.html"/>
@@ -20,6 +21,7 @@
         <style>
             :host {
                 display: block;
+                min-height: 150px;
             }
             #main {
                 margin-left: 20px;
@@ -45,9 +47,10 @@
             #card {
                 padding: 15px;
                 height: 100%;
-                background-color: #ffffff;
+                min-height: 150px;
             }
         </style>
+        <core-drag-drop on-drag-start="{{}}"></core-drag-drop>
         <paper-shadow id="card" z="1">
             <shadow></shadow>
             <template if="{{isRoot !== true}}">
@@ -57,42 +60,42 @@
                 </div>
             </template>
             <div id="main">
-                <template repeat="{{qChild in qData.childList}}">
+                <template repeat="{{qChild, qIndex in qData.childList}}">
                     <template if="{{qChild.type === 'qGroup'}}">
-                        <q-group qData="{{qChild}}" isRoot="false"></q-group>
+                        <q-group qData="{{qChild}}" on-close-tap="{{removeItem}}" order="{{qIndex}}" draggable="false"></q-group>
                     </template>
 
                     <!-- If not a group item -->
                     <template if="{{qChild.type === 'qTextField'}}">
-                        <q-text-field qData="{{qChild}}"></q-text-field>
+                        <q-text-field qData="{{qChild}}" on-close-tap="{{removeItem}}" order="{{qIndex}}" draggable="false"></q-text-field>
                     </template>
                     <template if="{{qChild.type === 'qNumberField'}}">
-                        <q-number-field qData="{{qChild}}"></q-number-field>
+                        <q-number-field qData="{{qChild}}" on-close-tap="{{removeItem}}" order="{{qIndex}}" draggable="false"></q-number-field>
                     </template>
                     <template if="{{qChild.type === 'qMultipleChoice'}}">
-                        <q-multiple-choice qData="{{qChild}}"></q-multiple-choice>
+                        <q-multiple-choice qData="{{qChild}}" on-close-tap="{{removeItem}}" order="{{qIndex}}" draggable="false"></q-multiple-choice>
                     </template>
                     <template if="{{qChild.type === 'qCheckList'}}">
-                        <q-check-list qData="{{qChild}}"></q-check-list>
+                        <q-check-list qData="{{qChild}}" on-close-tap="{{removeItem}}" order="{{qIndex}}" draggable="false"></q-check-list>
                     </template>
                     <template if="{{qChild.type === 'qSwitch'}}">
-                        <q-switch qData="{{qChild}}"></q-switch>
+                        <q-switch qData="{{qChild}}" on-close-tap="{{removeItem}}" order="{{qIndex}}" draggable="false"></q-switch>
                     </template>
                     <template if="{{qChild.type === 'qDateField'}}">
-                        <q-date-field qData="{{qChild}}"></q-date-field>
+                        <q-date-field qData="{{qChild}}" on-close-tap="{{removeItem}}" order="{{qIndex}}" draggable="false"></q-date-field>
                     </template>
                     <template if="{{qChild.type === 'qImageField'}}">
-                        <q-image-field qData="{{qChild}}"></q-image-field>
+                        <q-image-field qData="{{qChild}}" on-close-tap="{{removeItem}}" order="{{qIndex}}" draggable="false"></q-image-field>
                     </template>
                 </template>
             </div>
 
             <paper-menu-button>
-                <paper-button noink raised>
+                <paper-button noink raised on-tap="{{calculateValign}}">
                     <core-icon icon="add"></core-icon>
                     <span style="vertical-align: middle;">Add New</span>
                 </paper-button>
-                <paper-dropdown class="dropdown">
+                <paper-dropdown class="dropdown" valign="{{addBtnValign}}">
                     <core-menu class="menu">
                         <template repeat="{{qType in questionTypes}}">
                             <q-item noink qType="{{qType}}" on-tap="{{addQType}}">{{qType.typeName}}</q-item>
@@ -106,6 +109,9 @@
     <script>
         var MAX_LEVELS = 3;
         Polymer({
+            ready: function () {
+                this.$.card.style.background = this.isRoot ? '#ffffff': '#F1F6EF';
+            },
             typeName: 'Question Group',
             label: "Group Name",
             questionTypes: [
@@ -164,8 +170,6 @@
                             order: index + 1,
                             isRepeating: false
                         });
-                    } else {
-                        alert("Cannot have more than "+MAX_LEVELS+" levels");
                     }
                 } else if (qItem.qType.type === 'qMultipleChoice' || qItem.qType.type === 'qCheckList'){
                     this.qData.childList.push({
@@ -201,9 +205,70 @@
                     });
                 }
             },
+            addQuestion: function(qType) {
+                var index = this.qData.childList.length;
+                if (qType.type === 'qGroup') {
+                    if (this.qData.level < MAX_LEVELS) {
+                        this.qData.childList.push({
+                            type: qType.type,
+                            typeName: qType.typeName,
+                            name: '',
+                            childList: [],
+                            level: this.qData.level + 1,
+                            order: index + 1,
+                            isRepeating: false
+                        });
+                    }
+                } else if (qType.type === 'qMultipleChoice' || qType.type === 'qCheckList'){
+                    this.qData.childList.push({
+                        type: qType.type,
+                        typeName: qType.typeName,
+                        name: '',
+                        level: this.qData.level + 1,
+                        order: index + 1,
+                        elName: qType.elName,
+                        choices: []
+                    });
+                } else if(qType.type === 'qNumberField') {
+                    this.qData.childList.push({
+                        type: qType.type,
+                        typeName: qType.typeName,
+                        name: '',
+                        level: this.qData.level + 1,
+                        order: index + 1,
+                        elName: qType.elName,
+                        ranged: false,
+                        minimum: 0,
+                        maximum: 100
+                    });
+                }
+                else {
+                    this.qData.childList.push({
+                        type: qType.type,
+                        typeName: qType.typeName,
+                        name: '',
+                        level: this.qData.level + 1,
+                        order: index + 1,
+                        elName: qType.elName
+                    });
+                }
+            },
             changeRepeating: function () {
                 this.qData.isRepeating = !this.qData.isRepeating;
-            }
+            },
+            removeItem: function (e, detail, sender) {
+                var index = e.currentTarget.order;
+                this.qData.childList.splice(index, 1);
+                e.stopPropagation();
+            },
+            calculateValign: function (e, detail, sender) {
+                if (e.y > 0 && e.y < window.innerHeight/5*3) {
+                    this.addBtnValign = 'top';
+                } else {
+                    this.addBtnValign = 'bottom';
+                }
+            },
+            addBtnValign: 'top'
         });
     </script>
 </polymer-element>

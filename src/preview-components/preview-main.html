@@ -38,46 +38,46 @@
             }
         </style>
         <div class="main-content">
-            <template repeat="{{qData.childList}}" id="group">
+            <template repeat="{{qChild, qIndex in qData.childList}}" id="group">
                 <div class="question">
-                    <div class="question-name">{{order}}. {{name}}</div>
+                    <div class="question-name">{{qIndex+1}}. {{qChild.name}}</div>
                     <div class="question-body">
-                        <template if="{{type === 'qGroup'}}">
-                            <template if="{{isRepeating === true}}">
+                        <template if="{{qChild.type === 'qGroup'}}">
+                            <template if="{{qChild.isRepeating === true}}">
                                 <paper-button on-tap="{{addNewGroup}}" raised id="insertNewGroupHere">Add</paper-button>
                             </template>
-                            <template if="{{isRepeating !== true}}">
-                                <template ref="group" repeat="{{childList}}"></template>
+                            <template if="{{qChild.isRepeating !== true}}">
+                                <template ref="group" repeat="{{qChild, qIndex in qChild.childList}}"></template>
                             </template>
                         </template>
-                        <template if="{{type === 'qTextField'}}">
+                        <template if="{{qChild.type === 'qTextField'}}">
                             <paper-input-decorator>
                                 <input is="core-input" type="text"/>
                             </paper-input-decorator>
                         </template>
-                        <template if="{{type === 'qSwitch'}}">
+                        <template if="{{qChild.type === 'qSwitch'}}">
                             <paper-toggle-button></paper-toggle-button>
                         </template>
-                        <template if="{{type === 'qMultipleChoice'}}">
+                        <template if="{{qChild.type === 'qMultipleChoice'}}">
                             <paper-radio-group>
-                                <template repeat="{{choice in choices}}">
+                                <template repeat="{{choice in qChild.choices}}">
                                     <paper-radio-button name="{{choice.index}}" label="{{choice.name}}"></paper-radio-button>
                                 </template>
                             </paper-radio-group>
                         </template>
-                        <template if="{{type === 'qCheckList'}}">
-                            <template repeat="{{choice in choices}}">
+                        <template if="{{qChild.type === 'qCheckList'}}">
+                            <template repeat="{{choice in qChild.choices}}">
                                 <core-label horizontal layout>
                                     <paper-checkbox for></paper-checkbox>
                                     <div flex>{{choice.name}}</div>
                                 </core-label>
                             </template>
                         </template>
-                        <template if="{{type === 'qNumberField'}}">
-                            <template if="{{ranged}}">
-                                <paper-slider min="{{minimum}}" max="{{maximum}}" editable></paper-slider>
+                        <template if="{{qChild.type === 'qNumberField'}}">
+                            <template if="{{qChild.ranged}}">
+                                <paper-slider pin min="{{qChild.minimum}}" max="{{qChild.maximum}}" editable></paper-slider>
                             </template>
-                            <template if="{{!ranged}}">
+                            <template if="{{!qChild.ranged}}">
                                 <paper-input-decorator>
                                     <input type="number" is="core-input" step="0.1" preventInvalidInput/>
                                 </paper-input-decorator>

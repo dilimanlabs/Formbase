@@ -1,0 +1,44 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/core-overlay/core-overlay.html"/>
+<link rel="import" href="../components/paper-shadow/paper-shadow.html"/>
+
+<polymer-element name="gallery-context-menu" attributes="x y">
+    <template>
+        <style>
+            :host {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                display: block;
+            }
+            paper-shadow {
+                background-color: #ffffff;
+                height: 100px;
+                width: 200px;
+            }
+            paper-shadow div {
+                padding-left: 20px;
+            }
+            paper-shadow div:hover {
+                cursor: pointer;
+                background-color: #eeeeee;
+            }
+        </style>
+        <core-overlay id="overlay" layered></core-overlay>
+        <paper-shadow z="2" id="menu" layout vertical core-overlay-toggle>
+            <div flex layout horizontal center>Sort By</div>
+            <div flex layout horizontal center>New Folder</div>
+            <div flex layout horizontal center>New File</div>
+        </paper-shadow>
+    </template>
+    <script>
+        Polymer({
+            ready: function () {
+                this.$.overlay.target = this;
+            },
+            toggle: function () {
+                this.$.overlay.toggle();
+            }
+        });
+    </script>
+</polymer-element>

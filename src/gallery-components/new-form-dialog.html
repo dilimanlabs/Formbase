@@ -1,0 +1,56 @@
+<link rel="import" href="../components/polymer/polymer.html"/>
+<link rel="import" href="../components/paper-dialog/paper-action-dialog.html"/>
+<link rel="import" href="../components/paper-button/paper-button.html"/>
+<link rel="import" href="../components/paper-checkbox/paper-checkbox.html"/>
+<link rel="import" href="../components/paper-input/paper-input-decorator.html"/>
+<link rel="import" href="../components/paper-input/paper-autogrow-textarea.html"/>
+<link rel="import" href="../components/core-label/core-label.html"/>
+
+<polymer-element name="new-form-dialog">
+    <template>
+        <style>
+
+        </style>
+        <paper-action-dialog heading="New Form" id="newFormDialog" transition="core-transition-center" backdrop>
+            <div class="content">
+                <paper-input-decorator label="Form Name">
+                    <input is="core-input" value="{{newFormName}}" type="text"/>
+                </paper-input-decorator>
+                <paper-input-decorator label="Form description">
+                    <paper-autogrow-textarea maxRows="3">
+                        <textarea value="{{newFormDesc}}"></textarea>
+                    </paper-autogrow-textarea>
+                </paper-input-decorator>
+                <core-label horizontal layout>
+                    <paper-checkbox for style="padding: 20px 20px 20px 0;" checked?="{{enableSignature}}"></paper-checkbox>
+                    <div vertical layout>
+                        <h4>Enable Signature</h4>
+                    </div>
+                </core-label>
+            </div>
+            <paper-button affirmative>Cancel</paper-button>
+            <paper-button affirmative on-tap="{{addForm}}" disabled?="{{!newFormDesc || !newFormName}}">Ok</paper-button>
+        </paper-action-dialog>
+    </template>
+    <script>
+        Polymer("new-form-dialog", {
+            newFormDesc: '',
+            newFormName: '',
+            enableSignature: false,
+            toggle: function() {
+                this.newFormName = '';
+                this.newFormDesc = '';
+                this.enableSignature = false;
+                this.$.newFormDialog.toggle();
+            },
+            addForm: function() {
+                this.fire('add-form', {
+                    desc: this.newFormDesc,
+                    name: this.newFormName,
+                    enableSignature: this.enableSignature,
+                    dateCreated: new Date().toUTCString()
+                });
+            }
+        });
+    </script>
+</polymer-element>
